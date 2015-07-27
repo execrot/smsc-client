@@ -1,0 +1,16 @@
+{
+  "name": "execrot/smsc-client",
+  "type": "library",
+  "authors": [
+    {
+      "name": "Ethan Hunt",
+      "email": "execrot@gmail.com"
+    }
+  ],
+  "require": {
+    "php" : ">=5.4"
+  },
+  "autoload": {
+    "psr-0": { "Smsc": "src/" }
+  }
+}
