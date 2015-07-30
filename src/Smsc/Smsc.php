@@ -139,7 +139,7 @@ class Smsc
             'login'  => self::getConfig()['login'],
             'psw'    => self::getConfig()['password'],
             'phones' => implode(';', $receivers),
-            'mes'    => $message,
+            'mes'    => urlencode($message),
             'fmt'    => '3'
         ];
 
