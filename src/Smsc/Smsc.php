@@ -135,12 +135,13 @@ class Smsc
         }
 
         $params = [
-            'sender' => self::getConfig()['sender'],
-            'login'  => self::getConfig()['login'],
-            'psw'    => self::getConfig()['password'],
-            'phones' => implode(';', $receivers),
-            'mes'    => urlencode($message),
-            'fmt'    => '3'
+            'sender'  => self::getConfig()['sender'],
+            'login'   => self::getConfig()['login'],
+            'psw'     => self::getConfig()['password'],
+            'phones'  => implode(';', $receivers),
+            'charset' => 'utf-8',
+            'mes'     => $message,
+            'fmt'     => '3'
         ];
 
         $url = implode('?', [
