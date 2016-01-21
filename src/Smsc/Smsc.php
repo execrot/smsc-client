@@ -124,9 +124,9 @@ class Smsc
             throw new Exception\MessageCouldNotBeEmpty();
         }
 
-        if (mb_strlen($message) > 500) {
-            throw new Exception\MessageIsTooLong();
-        }
+//        if (mb_strlen($message) > 500) {
+//            throw new Exception\MessageIsTooLong();
+//        }
 
         $receivers = (array)$this->getReceivers();
 
