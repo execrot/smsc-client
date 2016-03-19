@@ -134,27 +134,35 @@ class Smsc
             throw new Exception\ReceiversListCouldNotBeEmpty();
         }
 
-        $params = [
-            'sender'  => self::getConfig()['sender'],
-            'login'   => self::getConfig()['login'],
-            'psw'     => self::getConfig()['password'],
-            'phones'  => implode(';', $receivers),
-            'charset' => 'utf-8',
-            'mes'     => $message,
-            'fmt'     => '3'
-        ];
+        $this->_lastError = [];
 
-        $url = implode('?', [
-            self::getConfig()['uri'],
-            implode('&', array_map(function ($key, $value) {
-                return "{$key}={$value}";
-            }, array_keys($params), array_values($params)))
-        ]);
+        foreach (str_split($message, 750) as $index => $messagePart) {
 
-        $response = json_decode(file_get_contents($url), true);
+            $params = [
+                'sender'  => self::getConfig()['sender'],
+                'login'   => self::getConfig()['login'],
+                'psw'     => self::getConfig()['password'],
+                'phones'  => implode(';', $receivers),
+                'charset' => 'utf-8',
+                'mes'     => $messagePart,
+                'fmt'     => '3'
+            ];
 
-        if (!empty($response['error'])) {
-            $this->_lastError = $response['error'];
+            $url = implode('?', [
+                self::getConfig()['uri'],
+                implode('&', array_map(function ($key, $value) {
+                    return "{$key}={$value}";
+                }, array_keys($params), array_values($params)))
+            ]);
+
+            $response = json_decode(file_get_contents($url), true);
+
+            if (!empty($response['error'])) {
+                $this->_lastError[$index] = $response['error'];
+            }
+        }
+
+        if (count($this->getLastError())) {
             return false;
         }
 
