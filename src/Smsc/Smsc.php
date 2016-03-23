@@ -144,7 +144,7 @@ class Smsc
                 'psw'     => self::getConfig()['password'],
                 'phones'  => implode(';', $receivers),
                 'charset' => 'utf-8',
-                'mes'     => $messagePart,
+                'mes'     => urlencode($messagePart),
                 'fmt'     => '3'
             ];
 
