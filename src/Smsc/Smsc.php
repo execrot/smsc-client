@@ -160,6 +160,7 @@ class Smsc
             if (!empty($response['error'])) {
                 $this->_lastError[$index] = $response['error'];
             }
+           sleep(2);
         }
 
         if (count($this->getLastError())) {
