@@ -124,10 +124,6 @@ class Smsc
             throw new Exception\MessageCouldNotBeEmpty();
         }
 
-//        if (mb_strlen($message) > 500) {
-//            throw new Exception\MessageIsTooLong();
-//        }
-
         $receivers = (array)$this->getReceivers();
 
         if (!count($receivers)) {
@@ -136,34 +132,69 @@ class Smsc
 
         $this->_lastError = [];
 
-        foreach (str_split($message, 750) as $index => $messagePart) {
+        $messageParts = [];
 
-            $params = [
-                'sender'  => self::getConfig()['sender'],
-                'login'   => self::getConfig()['login'],
-                'psw'     => self::getConfig()['password'],
-                'phones'  => implode(';', $receivers),
-                'charset' => 'utf-8',
-                'mes'     => urlencode($messagePart),
-                'fmt'     => '3'
-            ];
+        while (strlen($message) > 760) {
+            $index = strpos($message, ' ', 760);
+            $messageParts[] = trim(substr($message, 0, $index));
+            $message = substr($message, $index);
+        }
+        $messageParts[] = trim($message);
 
-            $url = implode('?', [
-                self::getConfig()['uri'],
-                implode('&', array_map(function ($key, $value) {
-                    return "{$key}={$value}";
-                }, array_keys($params), array_values($params)))
-            ]);
+        $message = $messageParts;
 
-            $response = json_decode(file_get_contents($url), true);
+        $errors = [];
 
-            if (!empty($response['error'])) {
-                $this->_lastError[$index] = $response['error'];
+        foreach ($message as $index => $messagePart) {
+
+            if (!$this->_send($receivers, $messagePart)) {
+
+                $errors[$index] = $this->getLastError();
             }
+
             sleep(60);
         }
 
+        $this->_lastError = $errors;
+
         if (count($this->getLastError())) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * @param array $receivers
+     * @param string $message
+     *
+     * @return bool
+     */
+    private function _send($receivers, $message)
+    {
+        $this->_lastError = null;
+
+        $params = [
+            'sender'  => self::getConfig()['sender'],
+            'login'   => self::getConfig()['login'],
+            'psw'     => self::getConfig()['password'],
+            'phones'  => implode(';', $receivers),
+            'charset' => 'utf-8',
+            'mes'     => urlencode($message),
+            'fmt'     => '3'
+        ];
+
+        $url = implode('?', [
+            self::getConfig()['uri'],
+            implode('&', array_map(function ($key, $value) {
+                return "{$key}={$value}";
+            }, array_keys($params), array_values($params)))
+        ]);
+
+        $response = json_decode(file_get_contents($url), true);
+
+        if (!empty($response['error'])) {
+            $this->_lastError = $response['error'];
             return false;
         }
 

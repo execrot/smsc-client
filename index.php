@@ -9,14 +9,14 @@ require_once "vendor/autoload.php";
     'uri' => 'http://smsc.ru/sys/send.php?',
     'login' => '{login}',
     'password' => '{password}',
-    'sender' => '{sernder-name}'
+    'sender' => '{sender-id}'
 ]);
 
 $sms = new \Smsc\Smsc();
 
-$sms->setReceivers(array('{number1}', 'number2'))
-    ->addReceiver('number3')
-    ->setMessage('message');
+$sms
+    ->addReceiver('{number}')
+    ->setMessage('{message}');
 
 if (!$sms->send()) {
     echo $sms->getLastError();
