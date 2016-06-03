@@ -134,8 +134,8 @@ class Smsc
 
         $messageParts = [];
 
-        while (strlen($message) > 760) {
-            $index = strpos($message, ' ', 760);
+        while (mb_strlen($message, 'UTF-8') > 799) {
+            $index = strpos($message, ' ', 799);
             $messageParts[] = trim(substr($message, 0, $index));
             $message = substr($message, $index);
         }
